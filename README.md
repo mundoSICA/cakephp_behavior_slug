@@ -12,7 +12,7 @@ Usted puede descargar la versión mas reciente de esta traduccion desde la sigui
 
 ##2.- Descargar el paquete.
 
-Debera agregar el archivo `app/models/behaviors/slug.php` en su carpeta `app/models/behaviors/` en caso de usar cakephp inferior a la versión 2 o en `app/Model/Behavior/` en caso de usar versión 2 o superior.
+Debera agregar el archivo `slug.php` en su carpeta `app/models/behaviors/` en caso de usar cakephp inferior a la versión 2 o en `app/Model/Behavior/` en caso de usar versión 2 o superior.
 
 ##3.- Seguir instrucciones de uso de comportamientos.
 
