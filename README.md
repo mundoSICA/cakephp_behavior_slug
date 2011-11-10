@@ -1,6 +1,25 @@
 #Slug Behavior.
 ###Enables a model object to sluggable behavior.
 
+# Instrucciones de uso.
+
+##1.- Descargar el paquete.
+
+Usted puede descargar la versión mas reciente de esta traduccion desde la siguientes URLs:
+
+<a href="https://github.com/mundoSICA/Magento_1.6.x_translation_es_MX/tarball/master" class="button icon arrowdown">Download as <b>.tar.gz</b></a>
+<a href="https://github.com/mundoSICA/Magento_1.6.x_translation_es_MX/zipball/master" class="button icon arrowdown">Download as <b>.zip</b></a>
+
+##2.- Descargar el paquete.
+
+Debera agregar el archivo `app/models/behaviors/slug.php` en su carpeta `app/models/behaviors/` en caso de usar cakephp inferior a la versión 2 o en `app/Model/Behavior/` en caso de usar versión 2 o superior.
+
+##3.- Seguir instrucciones de uso de comportamientos.
+
+Se recomienda seguir la siguiente documentación:
+
+> <http://book.cakephp.org/2.0/en/models/behaviors.html>
+
 
 ## Descripción de argumentos:
 
