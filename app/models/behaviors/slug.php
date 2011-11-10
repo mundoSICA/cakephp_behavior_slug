@@ -5,13 +5,10 @@
  * Enables a model object to sluggable behavior.
  * 
  * @Author        fitorec
- * @Acaneu        "Desarrollo web colaborativo" - http://mundosica.com (tm)
- * @copyright     2010-2011, Sicá - soluciones integrales en computación aplicada.
- * @link          http://mundosica.com/cakephp/behaviors/slug
- * @package       acaneu
- * @subpackage    acaneu.app.libs.model.behaviors
+ * @copyright     2010-2011, SICÁ (tm)- soluciones integrales en computación aplicada.
+ * @link          https://github.com/mundoSICA/cakephp_behavior_slug
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
- * @since         Acaneu(tm) v 0.2Beta
+ * @since         SICÁ(tm) v 0.1
  */
 
 class SlugBehavior extends ModelBehavior {
