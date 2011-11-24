@@ -121,7 +121,7 @@ Finalmente en nuestro controlador podemos llamar a las funciones slug:
 	$this->Articulo->readBySlug($slug);
 	
 	#obteniendo el id del articulo a partir del slug
-	$id = $this->Articulo->primaryKeyBySlug(($slug);
+	$id = $this->Articulo->primaryKeyBySlug(($slug));
 	
 	
 Para las demas funciones el comportamiento slug realiza las operaciones necesarias por ejemplo si deseamos guardar un registro basta con hacer:
