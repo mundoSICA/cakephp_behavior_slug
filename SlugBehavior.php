@@ -117,8 +117,7 @@ class SlugBehavior extends ModelBehavior {
 		if(!$Model->data[$alias][$slug_dst])
 			$Model->data[$alias][$slug_dst] = $this->slugStr($Model, $Model->data[$alias][$slug_src]);
 		#ponemos disponible el campo slug_dst en el modelo adecuado
-		#$Model->{$slug_dst}= $Model->data[$alias][$slug_dst];
-		return true;
+		return $Model->isUnique(array($slug_dst));
 	}
  /**
  * Returns a list of fields from the database, and sets the current model
