@@ -116,7 +116,7 @@ class SlugBehavior extends ModelBehavior {
 		#Si el elemento es vacio
 		if(!$Model->data[$alias][$slug_dst])
 			$Model->data[$alias][$slug_dst] = $this->slugStr($Model, $Model->data[$alias][$slug_src]);
-		#ponemos disponible el campo slug_dst en el modelo adecuado
+		#Regresamos el resultado del unique para el campo slug a guardar
 		return $Model->isUnique(array($slug_dst));
 	}
  /**
