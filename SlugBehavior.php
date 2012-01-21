@@ -25,8 +25,11 @@ class SlugBehavior extends ModelBehavior {
  * @access protected
  */
 	var $_defaults = array(
-		'slug_src' => 'title','slug_dst' => 'slug_dst', 'max_len' => 100,
-		'wd_separator' => '-','extension_active' => false,
+		'slug_src' => 'title',
+		'slug_dst' => 'slug_dst',
+		'max_len' => 100,
+		'wd_separator' => '-',
+		'extension_active' => false,
 	);
  /*
  * Descripción de argumentos:
