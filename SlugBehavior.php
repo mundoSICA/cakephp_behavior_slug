@@ -12,13 +12,13 @@
  */
 
 class SlugBehavior extends ModelBehavior {
- /**
+/**
  * Errors
  * @var array
  */
 	var $errors = array();
 
- /**
+/**
  * Defaults - slug_dst and slug_src should be uniqued
  *
  * @var array
@@ -31,7 +31,7 @@ class SlugBehavior extends ModelBehavior {
 		'wd_separator' => '-',
 		'extension_active' => false,
 	);
- /*
+/**
  * Descripción de argumentos:
  * 
  * slug_src : Este campo sera el que se convertira en slug_dst
@@ -53,7 +53,7 @@ class SlugBehavior extends ModelBehavior {
  * 
  * */
 
- /**
+/**
  * Initiate Slug behavior
  *
  * @param object $Model instance of model
@@ -78,7 +78,7 @@ class SlugBehavior extends ModelBehavior {
 			$settings['slug_dst'] = $settings['slug_src'];
 		$this->settings[$Model->alias] = $settings;
 	}
- /**
+/**
  * Descripción de la función
  *
  * @param tipo $parametro1 descripción del párametro 1.
@@ -102,7 +102,7 @@ class SlugBehavior extends ModelBehavior {
 			return ( $extension_active == true )? $slug.'.html' : $slug;
 	}
 
- /**
+/**
  * Before save method. Called before all saves
  *
  * Overriden to transparently manage setting the lft and rght fields if and only if the parent field is included in the
@@ -116,13 +116,12 @@ class SlugBehavior extends ModelBehavior {
 	function beforeSave(&$Model) {
 		$alias=$Model->alias;
 		extract($this->settings[$Model->alias]);
-		#Si el elemento es vacio
 		if( $Model->data[$alias][$slug_src] && (!isset($Model->data[$alias][$slug_dst]) || !$Model->data[$alias][$slug_dst]))
 			$Model->data[$alias][$slug_dst] = $this->slugStr($Model, $Model->data[$alias][$slug_src]);
 		#Regresamos el resultado del unique para el campo slug a guardar
 		return $Model->isUnique(array($slug_dst));
 	}
- /**
+/**
  * Returns a list of fields from the database, and sets the current model
  * data (Model::$data) with the record found.
  *
@@ -148,7 +147,7 @@ class SlugBehavior extends ModelBehavior {
 			return false;
 		}
 	}
- /**
+/**
  * Returns the primaryKey field of Model
  *
  * @param string $slug String of slug_dst.
@@ -160,5 +159,18 @@ class SlugBehavior extends ModelBehavior {
 		extract($this->settings[$Model->alias]);
 		$conditions = array($Model->alias . '.' . $slug_dst => $slug);
 		return $Model->field($Model->primaryKey, $conditions);
+	}
+/**
+ * Regresa el Slug apartir de la clave primaria
+ *
+ * @param string $key_val el valor de la clave primaria
+ * @return string $slug_dst el valor del slug
+ * @access publico
+ */
+	function getSlug(&$Model, $key_val) {
+		extract($this->settings[$Model->alias]);
+		if( isset($Model->{$slug_dst}) && $Model->{$slug_dst} != NULL)
+			return $Model->{$slug_dst};
+		return $Model->field($slug_dst, array($Model->alias . '.' . $Model->primaryKey => $key_val));
 	}
 }
