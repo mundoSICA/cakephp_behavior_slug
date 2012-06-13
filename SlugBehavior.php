@@ -155,10 +155,13 @@ class SlugBehavior extends ModelBehavior {
  * @access public
  * @link http://book.cakephp.org/view/1017/Retrieving-Your-Data#field-1028
  */
-	function primaryKeyBySlug(&$Model, $slug=null) {
+	function primaryKeyBySlug(&$Model, $slug=null, $setPrimaryKey = false) {
 		extract($this->settings[$Model->alias]);
 		$conditions = array($Model->alias . '.' . $slug_dst => $slug);
-		return $Model->field($Model->primaryKey, $conditions);
+		$PrimaryKey = $Model->field($Model->primaryKey, $conditions);
+		if($setPrimaryKey)
+			$Model->{$Model->primaryKey} = $PrimaryKey;
+		return $PrimaryKey;
 	}
 /**
  * Regresa el Slug apartir de la clave primaria
