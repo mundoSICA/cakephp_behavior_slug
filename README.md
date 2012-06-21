@@ -3,7 +3,7 @@
 
 # Comportamiento para URLs Amigables.
 
-En ocasiones queremos que nuestros _registros_ sean accedidos por otro campo clave ademas del ID, por ejemplo en el sitio web tenemos **articulos** los cuales tiene los siguientes campos:
+En ocasiones queremos que nuestros _registros_ sean accedidos por otro campo clave ademas del ID, por ejemplo en el sitio web tenemos **artículos** los cuales tiene los siguientes campos:
 
  - id - Identificador (campo auto incrementable)
  - nombre - Es campo es único también.
@@ -95,7 +95,7 @@ El campo que tomara para trasformarlo sera `titulo` (por encima de `nombre`) ya 
 
 #### slug\_dst "destino del campo slug":
 
-Deberas agregar el campo slug_dst como indice:
+Deberás agregar el campo slug_dst como indice:
 
 	ALTER TABLE `talleres` ADD `slug_dst` VARCHAR( 80 ) NOT NULL AFTER `id` ,
 	ADD INDEX ( `slug_dst` ) 
@@ -129,15 +129,20 @@ Longitud máxima que puede llegar a tomar `slug_dst`.
 
 #### wd\_separator separador de palabras:
 
-Separador de palabras `wd_separator` (words separator) es el caracter separador de palabras, por defecto(-).
+Separador de palabras `wd_separator` (words separator) es el carácter separador de palabras,el valor por defecto es el guion alto(-), pero tu puedes definir otro por ejemplo:
 
 	var $actsAs = array('Slug'=>array('wd_separator'=>'_'));
-	#esto nos genera
-	Articulo.slug_dst = "este_es_un_articulo_sobre_el_comportamiento_slug" .
+
+Esto nos generaría en `slug_dst` el valor de `algun_articulo`(en lugar de `algun-articulo`)
+
+	var $actsAs = array('Slug'=>array('wd_separator'=>'.'));
+
+Esto nos generaría en `slug_dst` el valor de `algun.articulo`.
+
 
 #### extension\_active Activación de extensión:
 
-Por defecto false, si activamos este campo agrega la extensión '.html', reduciendo 5 carácteres el campo max\_len (la longitud de '.html').
+Por defecto false, si activamos este campo agrega la extensión '.html', reduciendo 5 caracteres el campo max\_len (la longitud de '.html').
 
 	var $actsAs = array('Slug'=>array('extension_active'=>true));
 
@@ -171,21 +176,23 @@ En nuestro modelo de **Articulo**(`APP/Model/Behavior/SlugBehavior.php`) definim
 
 El código anterior hace que el campo nombre(definido como `displayField`) sera trasformado con la forma `slug` y sera almacenado en el campo `slug_dst` para que de esta forma podamos realizar las consultas.
 
+### Accediendo a los valores desde slug
+
 Finalmente en nuestro controlador podemos llamar a las funciones slug:
 
 	#leyendo un registro a partir del slug
 	$this->Articulo->readBySlug($slug);
-	
+
 	#obteniendo el id del articulo a partir del slug
 	$id = $this->Articulo->primaryKeyBySlug(($slug));
 	
 	
-Para las demas funciones el comportamiento slug realiza las operaciones necesarias por ejemplo si deseamos guardar un registro basta con hacer:
+Para las demás funciones el comportamiento slug realiza las operaciones necesarias por ejemplo si deseamos guardar un registro basta con hacer:
 
 	#agregando
 	$this->Articulo->save($this->data);
 	
-Donde en $this->data debera existir el campo nombre y automaticamente el comportamiento nos va a generar el `slug_dst` slug destino al tiempo que realiza las validaciones necesarias, _¿facil no?_.
+Donde en $this->data deberá contener el campo `displayField`(o el `slug_sr` que hallamos definido) y automáticamente el comportamiento nos va a generar el `slug_dst`, _¿fácil no?_.
 
 
 
@@ -205,3 +212,4 @@ Por el momento no he abordado el problema si tienes alguna idea bienvenida sea
 Si quieres comprender mas te remiendo seguir la siguiente documentación:
 
 > <http://book.cakephp.org/2.0/en/models/behaviors.html>
+
