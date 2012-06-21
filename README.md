@@ -34,7 +34,7 @@ Imaginemos que queremos hacer que nuestros artículos se pudieran acceder a part
 	http://mi-sitio/articulos/borrar/algun-articulo.html
 
 
-Precisamente este `Slug Behavior` nos permite hacer esto con cakephp, te interesa continua leyendo...
+Precisamente este `Slug Behavior` nos permite hacer esto con [cakephp](http://cakephp.org/), ¿te interesa? continua leyendo...
 
 
 # Instrucciones de uso.
