@@ -1,85 +1,29 @@
 #Slug Behavior.
 ###Enables a model object to sluggable behavior.
 
-# Instrucciones de uso.
+# Comportamiento para URLs Amigables.
 
-##1.- Descargar el paquete.
+En ocasiones queremos que nuestros _registros_ sean accedidos por otro campo clave ademas del ID, por ejemplo en el sitio web tenemos **articulos** los cuales tiene los siguientes campos:
 
-Usted puede descargar la versión mas reciente de esta traduccion desde la siguientes URLs:
-
-<a href="https://github.com/mundoSICA/Magento_1.6.x_translation_es_MX/tarball/master" class="button icon arrowdown">Download as <b>.tar.gz</b></a>
-<a href="https://github.com/mundoSICA/Magento_1.6.x_translation_es_MX/zipball/master" class="button icon arrowdown">Download as <b>.zip</b></a>
-
-##2.- Descargar el paquete.
-
-Debera agregar el archivo `slug.php` en su carpeta `app/models/behaviors/` en caso de usar cakephp inferior a la versión 2 o en `app/Model/Behavior/` en caso de usar versión 2 o superior.
-
-##3.- Seguir instrucciones de uso de comportamientos.
-
-Se recomienda seguir la siguiente documentación:
-
-> <http://book.cakephp.org/2.0/en/models/behaviors.html>
+ - id - Identificador (campo auto incrementable)
+ - nombre - Es campo es único también.
+ - contenido - texto el cual podría ser vació.
 
 
-## Descripción de argumentos:
-
-#### slug\_src:
-
-Por defecto toma el campo que hayamos definido como [**displayField**](http://book.cakephp.org/view/1062/displayField), este debera ser un campo uníco en la tabla, el cual sufrira la trasformación **slug** para ser almacenado como `slug_dst`.
-
-	var $displayField = 'titulo';
-	#esto nos genera
-	Articulo.titulo = "Este es un articulo sobre el comportamiento Slug"
-	Articulo.slug_dst = "Este-es-un-articulo-sobre-el-comportamiento-Slug"
-	#Otra forma de hacerlo es de la siguiente manera
-	var $actsAs = array('Slug'=>array('slug_src' => 'titulo'));
-
-Cabe mencionar que si definimos el **displayField** y por otra parte en la configuramos **slug_src** la opción que tomara sera esta ultima, veamos un ejemplo.
-
-	var $displayField = 'nombre';
-	var $actsAs = array('Slug'=>array('slug_src' => 'titulo'));
-
-El campo que tomara sera `titulo` (por encima de `nombre`) ya que de esta forma estaremos diciendo explicitamente que el `slug_src` debera ser el campo `titulo`.
+Ahora según el estándar del cakephp nos dice que para acceder al primer, articulo el cual se llama "algún articulo" tendríamos las siguientes **URLs**:
 
 
-#### slug\_dst:
+	#visualizando un articulo
+	http://mi-sitio/articulos/ver/1
 
-Este campo tambien debe ser unico en la tabla y sera el resultado de la trasformación slug sobre `slug_dst` que sera almacenado en la base de datos automaticamente.
+	#Editando un articulo
+	http://mi-sitio/articulos/editar/1
+	
+	#Borrando un articulo
+	http://mi-sitio/articulos/borrar/1
+
  
-	var $actsAs = array('Slug'=>array('slug_src' => 'seo_url'));
-	#esto nos genera
-	Articulo.slug_dst = "Este es un articulo sobre el comportamiento Slug"
-	Articulo.seo_url = "este-es-un-articulo-sobre-el-comportamiento-slug" .
-
-
-#### max\_len:
-
-Longitud máxima que puede llegar a tomar slug\_dst.
-
-	var $actsAs = array('Slug'=>array('max_len'=>30));
-	#esto nos genera
-	Articulo.slug_dst = "este-es-un-articulo-sobre-el-c"
-
-#### wd\_separator:
-
-Separador de palabras `wd\_separator` (words separator) es el caracter separador de palabras, por defecto(-).
-
-	var $actsAs = array('Slug'=>array('wd_separator'=>'_'));
-	#esto nos genera
-	Articulo.slug_dst = "este_es_un_articulo_sobre_el_comportamiento_slug" .
-
-####extension\_active:
-
-Por defecto false, si activamos este campo agrega la extensión '.html', reduciendo 5 carácteres el campo max\_len (la longitud de '.html').
-
-	var $actsAs = array('Slug'=>array('extension_active'=>true));
-	#esto nos genera
-	Articulo.slug_dst = "este-es-un-articulo-sobre-el-comportamiento-slug.html"
-
-
-## Ejemplo de configuración:
-
-Imaginemos que queremos hacer que nuestros articulos que nos gustaria que tuviera urls amigable es decir que sobre el titulo podieramos es decir:
+Imaginemos que queremos hacer que nuestros artículos se pudieran acceder a partir de las siguientes **URLs**:
 	
 	#visualizando un articulo
 	http://mi-sitio/articulos/ver/algun-articulo.html
@@ -90,17 +34,129 @@ Imaginemos que queremos hacer que nuestros articulos que nos gustaria que tuvier
 	#Borrando un articulo
 	http://mi-sitio/articulos/borrar/algun-articulo.html
 
+
+Precisamente este `Slug Behavior` nos permite hacer esto con cakephp, te interesa continua leyendo...
+
+
+# Instrucciones de uso.
+
+## Descargar el paquete.
+
+Usted puede descargar la versión mas reciente este proyecto desde la siguientes **URLs**:
+
+<a href="https://github.com/mundoSICA/Magento_1.6.x_translation_es_MX/tarball/master" class="button icon arrowdown">Download as <b>.tar.gz</b></a>
+<a href="https://github.com/mundoSICA/Magento_1.6.x_translation_es_MX/zipball/master" class="button icon arrowdown">Download as <b>.zip</b></a>
+
+## Agrega el SlugBehavior en tu aplicación.
+
+Agrega el archivo `SlugBehavior.php` en la carpeta `app/Model/Behavior/`.
+
+## Edita tu tabla de base de datos.
+
+En este caso teníamos artículos con los siguientes campos.
+
+ - id - Identificador (campo auto incrementable)
+ - nombre - Es campo es único también.
+ - contenido - texto el cual podría ser vació.
+
+Es importante comentar que el campo nombre es único ahora solo faltaria agregar otro campo único con el nombre `slug_dst`.
+
+Como **Tip** te recomiendo configuraren tu  base de datos el campo `slug_dst` como indice, esto por cuestiones de rendimiento ya que al generar `slug_dst` como indice el motor **SQL** genera mas rápido las consultas:
+
+      ALTER TABLE `articulos` ADD INDEX ( `slug_dst` ) ;
+
+## Descripción de argumentos:
+
+#### slug\_src:
+
+Por defecto toma el campo que hayamos definido como [**displayField**](http://book.cakephp.org/view/1062/displayField),ademas este campo deberá ser un campo único en la tabla, el cual sufrirá la trasformación **slug** para ser almacenado como `slug_dst`.
+
+
+	#Definiendo el campo $displayField
+	var $displayField = 'titulo';
+	#Agregamos el comportamiento `Slug` entre la lista de comportamientos
+	var $actsAs = array('Slug');
+
+#### Definición explicita del campo a trasformar
+
+	#Agregamos el comportamiento `Slug` entre la lista de
+	#comportamientos, esta vez con defincion explita del
+	#campo a traformar slug_src
+	var $actsAs = array('Slug'=>array('slug_src' => 'titulo'));
+
+
+Cabe mencionar que si definimos el **displayField** y también definimos explícitamente el campo a trasformar `slug_src` la opción que tomara sera la explicita, veamos un ejemplo:
+
+	var $displayField = 'nombre';
+	var $actsAs = array('Slug'=>array('slug_src' => 'titulo'));
+
+El campo que tomara para trasformarlo sera `titulo` (por encima de `nombre`) ya que de esta forma estaremos diciendo explícitamente que el `slug_src` deberá ser el campo `titulo`.
+
+
+#### slug\_dst "destino del campo slug":
+
+Deberas agregar el campo slug_dst como indice:
+
+	ALTER TABLE `talleres` ADD `slug_dst` VARCHAR( 80 ) NOT NULL AFTER `id` ,
+	ADD INDEX ( `slug_dst` ) 
+
+El resultado de la trasformación **slug**  la cual en este caso seria 'algun-articulo', se almacenara automáticamente en este campo y desde ahí nuestro sistema podrá responder desde una url similar a:
+
+	#accediendo a alguna acción para el articulo "algún articulo"
+	http://mi-sitio/articulos/alguna_accion/algun-articulo
+
+
+> El comportamiento Slug revisa si la tabla contiene el campo `slug_dst` para almacenar esta información automáticamente.
+
+
+#### slug\_dst explícito.
+
+Ahora sí por alguna razón necesitas(ó simplemente deseas) que almacenar el valor `slug_dst`  en algún campo distinto por ejemplo `seo_url`, lo que tienes que hacer es definir explícitamente el campo `slug_dst`.
+
+ 
+	var $actsAs = array('Slug'=>array('slug_dst' => 'seo_url'));
+
+En este caso el valor 'algun-articulo' quedaria almacenado en el campo `seo_url` de nuestra tabla `articulos`.
+
+
+#### max\_len Longitud máxima:
+
+Longitud máxima que puede llegar a tomar `slug_dst`.
+
+	var $actsAs = array('Slug'=>array('max_len'=>30));
+	#esto nos genera
+	Articulo.slug_dst = "este-es-un-articulo-sobre-el-c"
+
+#### wd\_separator separador de palabras:
+
+Separador de palabras `wd_separator` (words separator) es el caracter separador de palabras, por defecto(-).
+
+	var $actsAs = array('Slug'=>array('wd_separator'=>'_'));
+	#esto nos genera
+	Articulo.slug_dst = "este_es_un_articulo_sobre_el_comportamiento_slug" .
+
+#### extension\_active Activación de extensión:
+
+Por defecto false, si activamos este campo agrega la extensión '.html', reduciendo 5 carácteres el campo max\_len (la longitud de '.html').
+
+	var $actsAs = array('Slug'=>array('extension_active'=>true));
+
+
+En este caso el valor `slug_dst` seria `algun-articulo.html` agregando al final la extensión `.html`.
+
+
+## Ejemplo concreto de configuración:
+
 Entonces definimos la siguiente tabla:
 
 	CREATE TABLE IF NOT EXISTS `articulos` (
 		`id` INT( 5 ) PRIMARY KEY NOT NULL UNIQUE AUTO_INCREMENT,
 		`nombre` VARCHAR( 80 ) NOT NULL UNIQUE,
 		`slug_dst` VARCHAR( 50 ) NOT NULL UNIQUE,
-		`contenido` VARCHAR( 150 ) DEFAULT NULL,
-		`created` DATETIME NOT NULL,
+		`contenido` VARCHAR( 150 ) DEFAULT NULL
 	) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
-En nuestro modelo de **Articulo** definimos el comportamiento **slug** de la siguiente manera:
+En nuestro modelo de **Articulo**(`APP/Model/Behavior/SlugBehavior.php`) definimos el comportamiento **slug** de la siguiente manera:
 
 	<?php
 	class Articulo extends AppModel{
@@ -131,3 +187,21 @@ Para las demas funciones el comportamiento slug realiza las operaciones necesari
 	
 Donde en $this->data debera existir el campo nombre y automaticamente el comportamiento nos va a generar el `slug_dst` slug destino al tiempo que realiza las validaciones necesarias, _¿facil no?_.
 
+
+
+## Cambios futuros.
+
+Este proyecto actualmente esta en la versión `1.0` los cambios en la siguiente versión( 1.1 ) se esperan que sean:
+
+ - Agregar **callBack slug_prefix**.
+ - Agregar **callBack slug_postfix**.
+ - Soporte para extensiones distintas a html, p.e.(`xhml`, `xml`).
+
+Por el momento no he abordado el problema si tienes alguna idea bienvenida sea
+
+
+## Hackers.
+
+Si quieres comprender mas te remiendo seguir la siguiente documentación:
+
+> <http://book.cakephp.org/2.0/en/models/behaviors.html>
