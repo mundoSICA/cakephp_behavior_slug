@@ -1,0 +1,314 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Cakephp behavior slug by mundoSICA</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Cakephp behavior slug</h1>
+        <p>Enables a model object to sluggable behavior.</p>
+        <p class="view"><a href="https://github.com/mundoSICA/cakephp_behavior_slug">View the Project on GitHub <small>mundoSICA/cakephp_behavior_slug</small></a></p>
+        <ul>
+          <li><a href="https://github.com/mundoSICA/cakephp_behavior_slug/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/mundoSICA/cakephp_behavior_slug/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/mundoSICA/cakephp_behavior_slug">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Slug Behavior.</h1>
+
+<h3>Enables a model object to sluggable behavior.</h3>
+
+<h1>Comportamiento para URLs Amigables.</h1>
+
+<p>En ocasiones queremos que nuestros <em>registros</em> sean accedidos por un campo distinto al <strong>ID</strong>, por ejemplo en el sitio web tenemos <strong>artículos</strong> los cuales tiene los siguientes campos:</p>
+
+<ul>
+<li>id - Identificador (campo auto incrementable)</li>
+<li>nombre - Es campo es único también.</li>
+<li>contenido - texto el cual podría ser vació.</li>
+</ul><p>Si queremos definir las acciones <code>ver</code>, <code>editar</code> y <code>borrar</code> para nuestros articulos, <a href="http://book.cakephp.org/2.0/en/development/routing.html#default-routing">el estándar del <strong>cakephp</strong></a> nos dice que para acceder al primer, articulo el cual se llama "algún articulo" tendríamos las siguientes <strong>URLs</strong>:</p>
+
+<pre><code>#visualizando un articulo
+http://mi-sitio/articulos/ver/1
+
+#Editando un articulo
+http://mi-sitio/articulos/editar/1
+
+#Borrando un articulo
+http://mi-sitio/articulos/borrar/1
+</code></pre>
+
+<p>Imaginemos que queremos hacer que nuestros artículos se pudieran acceder a partir de las siguientes <strong>URLs</strong>:</p>
+
+<pre><code>#visualizando un articulo
+http://mi-sitio/articulos/ver/algun-articulo.html
+
+#Editando un articulo
+http://mi-sitio/articulos/editar/algun-articulo.html
+
+#Borrando un articulo
+http://mi-sitio/articulos/borrar/algun-articulo.html
+</code></pre>
+
+<p>Precisamente este <code>Slug Behavior</code> nos permite hacer esto con <a href="http://cakephp.org/">cakephp</a>, ¿te interesa? continua leyendo...</p>
+
+<h1>Instrucciones de uso.</h1>
+
+<h2>Descargar el paquete.</h2>
+
+<p>Usted puede descargar la versión mas reciente este proyecto desde la siguientes <strong>URLs</strong>:</p>
+
+<p><a href="https://github.com/mundoSICA/Magento_1.6.x_translation_es_MX/tarball/master">Download as <b>.tar.gz</b></a>
+<a href="https://github.com/mundoSICA/Magento_1.6.x_translation_es_MX/zipball/master">Download as <b>.zip</b></a></p>
+
+<h2>Agrega el SlugBehavior en tu aplicación.</h2>
+
+<p>Agrega el archivo <code>SlugBehavior.php</code> en la carpeta <code>app/Model/Behavior/</code>.</p>
+
+<h2>Edita tu tabla de base de datos.</h2>
+
+<p>En este caso teníamos artículos con los siguientes campos.</p>
+
+<ul>
+<li>id - Identificador (campo auto incrementable)</li>
+<li>nombre - Es campo es único también.</li>
+<li>contenido - texto el cual podría ser vació.</li>
+</ul><p>Es importante comentar que el campo nombre es único ahora solo faltaria agregar otro campo único con el nombre <code>slug_dst</code>.</p>
+
+<p>Como <strong>Tip</strong> te recomiendo configuraren tu  base de datos el campo <code>slug_dst</code> como indice, esto por cuestiones de rendimiento ya que al generar <code>slug_dst</code> como indice el motor <strong>SQL</strong> genera mas rápido las consultas:</p>
+
+<pre><code>  ALTER TABLE `articulos` ADD INDEX ( `slug_dst` ) ;
+</code></pre>
+
+<h2>Descripción de argumentos:</h2>
+
+<h4>slug_src:</h4>
+
+<p>Por defecto toma el campo que hayamos definido como <a href="http://book.cakephp.org/view/1062/displayField"><strong>displayField</strong></a>,ademas este campo deberá ser un campo único en la tabla, el cual sufrirá la trasformación <strong>slug</strong> para ser almacenado como <code>slug_dst</code>.</p>
+
+<div class="highlight">
+<pre><span class="cp">&lt;?php</span>
+    <span class="c1">#Definiendo el campo $displayField</span>
+    <span class="k">var</span> <span class="nv">$displayField</span> <span class="o">=</span> <span class="s1">'titulo'</span><span class="p">;</span>
+    <span class="c1">#Agregamos el comportamiento `Slug` entre la lista de comportamientos</span>
+    <span class="k">var</span> <span class="nv">$actsAs</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">'Slug'</span><span class="p">);</span>
+</pre>
+</div>
+
+
+<h4>Definición explicita del campo a trasformar</h4>
+
+<div class="highlight">
+<pre><span class="cp">&lt;?php</span>
+    <span class="c1">#Agregamos el comportamiento `Slug` entre la lista de</span>
+    <span class="c1">#comportamientos, esta vez con defincion explita del</span>
+    <span class="c1">#campo a traformar slug_src</span>
+    <span class="k">var</span> <span class="nv">$actsAs</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">'Slug'</span><span class="o">=&gt;</span><span class="k">array</span><span class="p">(</span><span class="s1">'slug_src'</span> <span class="o">=&gt;</span> <span class="s1">'titulo'</span><span class="p">));</span>
+</pre>
+</div>
+
+
+<p>Cabe mencionar que si definimos el <strong>displayField</strong> y también definimos explícitamente el campo a trasformar <code>slug_src</code> la opción que tomara sera la explicita, veamos un ejemplo:</p>
+
+<div class="highlight">
+<pre><span class="cp">&lt;?php</span>
+    <span class="k">var</span> <span class="nv">$displayField</span> <span class="o">=</span> <span class="s1">'nombre'</span><span class="p">;</span>
+    <span class="k">var</span> <span class="nv">$actsAs</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">'Slug'</span><span class="o">=&gt;</span><span class="k">array</span><span class="p">(</span><span class="s1">'slug_src'</span> <span class="o">=&gt;</span> <span class="s1">'titulo'</span><span class="p">));</span>
+</pre>
+</div>
+
+
+<p>El campo que tomara para trasformarlo sera <code>titulo</code> (por encima de <code>nombre</code>) ya que de esta forma estaremos diciendo explícitamente que el <code>slug_src</code> deberá ser el campo <code>titulo</code>.</p>
+
+<h4>slug_dst "destino del campo slug":</h4>
+
+<p>Deberás agregar el campo slug_dst como indice:</p>
+
+<div class="highlight">
+<pre>    <span class="k">ALTER</span> <span class="k">TABLE</span> <span class="o">`</span><span class="n">talleres</span><span class="o">`</span> <span class="k">ADD</span> <span class="o">`</span><span class="n">slug_dst</span><span class="o">`</span> <span class="nb">VARCHAR</span><span class="p">(</span> <span class="mi">80</span> <span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">AFTER</span> <span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="p">,</span>
+    <span class="k">ADD</span> <span class="k">INDEX</span> <span class="p">(</span> <span class="o">`</span><span class="n">slug_dst</span><span class="o">`</span> <span class="p">)</span> 
+</pre>
+</div>
+
+
+<p>El resultado de la trasformación <strong>slug</strong>  la cual en este caso seria 'algun-articulo', se almacenara automáticamente en este campo y desde ahí nuestro sistema podrá responder desde una url similar a:</p>
+
+<pre><code>#accediendo a alguna acción para el articulo "algún articulo"
+http://mi-sitio/articulos/alguna_accion/algun-articulo
+</code></pre>
+
+<blockquote>
+<p>El comportamiento Slug revisa si la tabla contiene el campo <code>slug_dst</code> para almacenar esta información automáticamente.</p>
+</blockquote>
+
+<h4>slug_dst explícito.</h4>
+
+<p>Ahora sí por alguna razón necesitas(ó simplemente deseas) que almacenar el valor <code>slug_dst</code>  en algún campo distinto por ejemplo <code>seo_url</code>, lo que tienes que hacer es definir explícitamente el campo <code>slug_dst</code>.</p>
+
+<div class="highlight">
+<pre><span class="cp">&lt;?php</span>
+    <span class="k">var</span> <span class="nv">$actsAs</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">'Slug'</span><span class="o">=&gt;</span><span class="k">array</span><span class="p">(</span><span class="s1">'slug_dst'</span> <span class="o">=&gt;</span> <span class="s1">'seo_url'</span><span class="p">));</span>
+</pre>
+</div>
+
+
+<p>En este caso el valor 'algun-articulo' quedaria almacenado en el campo <code>seo_url</code> de nuestra tabla <code>articulos</code>.</p>
+
+<h4>max_len Longitud máxima:</h4>
+
+<p>Longitud máxima que puede llegar a tomar <code>slug_dst</code>.</p>
+
+<div class="highlight">
+<pre><span class="cp">&lt;?php</span>
+    <span class="k">var</span> <span class="nv">$actsAs</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">'Slug'</span><span class="o">=&gt;</span><span class="k">array</span><span class="p">(</span><span class="s1">'max_len'</span><span class="o">=&gt;</span><span class="mi">30</span><span class="p">));</span>
+    <span class="c1">#esto nos genera</span>
+    <span class="nx">Articulo</span><span class="o">.</span><span class="nx">slug_dst</span> <span class="o">=</span> <span class="s2">"este-es-un-articulo-sobre-el-c"</span>
+</pre>
+</div>
+
+
+<h4>wd_separator separador de palabras:</h4>
+
+<p>Separador de palabras <code>wd_separator</code> (words separator) es el carácter separador de palabras,el valor por defecto es el guion alto(-), pero tu puedes definir otro por ejemplo:</p>
+
+<div class="highlight">
+<pre><span class="cp">&lt;?php</span>
+    <span class="k">var</span> <span class="nv">$actsAs</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">'Slug'</span><span class="o">=&gt;</span><span class="k">array</span><span class="p">(</span><span class="s1">'wd_separator'</span><span class="o">=&gt;</span><span class="s1">'_'</span><span class="p">));</span>
+</pre>
+</div>
+
+
+<p>Esto nos generaría en <code>slug_dst</code> el valor de <code>algun_articulo</code>(en lugar de <code>algun-articulo</code>)</p>
+
+<div class="highlight">
+<pre><span class="cp">&lt;?php</span>
+    <span class="k">var</span> <span class="nv">$actsAs</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">'Slug'</span><span class="o">=&gt;</span><span class="k">array</span><span class="p">(</span><span class="s1">'wd_separator'</span><span class="o">=&gt;</span><span class="s1">'.'</span><span class="p">));</span>
+</pre>
+</div>
+
+
+<p>Esto nos generaría en <code>slug_dst</code> el valor de <code>algun.articulo</code>.</p>
+
+<h4>extension_active Activación de extensión:</h4>
+
+<p>Por defecto false, si activamos este campo agrega la extensión '.html', reduciendo 5 caracteres el campo max_len (la longitud de '.html').</p>
+
+<div class="highlight">
+<pre><span class="x">    var $actsAs = array('Slug'=&gt;array('extension_active'=&gt;true));</span>
+</pre>
+</div>
+
+
+<p>En este caso el valor <code>slug_dst</code> seria <code>algun-articulo.html</code> agregando al final la extensión <code>.html</code>.</p>
+
+<h2>Ejemplo concreto de configuración:</h2>
+
+<p>Entonces definimos la siguiente tabla:</p>
+
+<div class="highlight">
+<pre>    <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="o">`</span><span class="n">articulos</span><span class="o">`</span> <span class="p">(</span>
+        <span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">INT</span><span class="p">(</span> <span class="mi">5</span> <span class="p">)</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">UNIQUE</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+        <span class="o">`</span><span class="n">nombre</span><span class="o">`</span> <span class="nb">VARCHAR</span><span class="p">(</span> <span class="mi">80</span> <span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">UNIQUE</span><span class="p">,</span>
+        <span class="o">`</span><span class="n">slug_dst</span><span class="o">`</span> <span class="nb">VARCHAR</span><span class="p">(</span> <span class="mi">50</span> <span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="k">UNIQUE</span><span class="p">,</span>
+        <span class="o">`</span><span class="n">contenido</span><span class="o">`</span> <span class="nb">VARCHAR</span><span class="p">(</span> <span class="mi">150</span> <span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span>
+    <span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">latin1</span> <span class="n">AUTO_INCREMENT</span><span class="o">=</span><span class="mi">1</span> <span class="p">;</span>
+</pre>
+</div>
+
+
+<p>En nuestro modelo de <strong>Articulo</strong>(<code>APP/Model/Behavior/SlugBehavior.php</code>) definimos el comportamiento <strong>slug</strong> de la siguiente manera:</p>
+
+<div class="highlight">
+<pre><span class="cp">&lt;?php</span>
+    <span class="k">class</span> <span class="nc">Articulo</span> <span class="k">extends</span> <span class="nx">AppModel</span><span class="p">{</span>
+        <span class="k">var</span> <span class="nv">$name</span> <span class="o">=</span> <span class="s1">'Articulo'</span><span class="p">;</span>
+
+        <span class="c1">#campo a mostrar</span>
+        <span class="k">var</span> <span class="nv">$displayField</span> <span class="o">=</span> <span class="s1">'nombre'</span><span class="p">;</span>
+
+        <span class="c1">#Definición del comportamiento slug</span>
+        <span class="k">var</span> <span class="nv">$actsAs</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span> <span class="s1">'slug'</span><span class="o">=&gt;</span><span class="k">array</span><span class="p">(</span><span class="s1">'extension_active'</span><span class="o">=&gt;</span><span class="k">true</span><span class="p">));</span>
+    <span class="p">}</span>
+</pre>
+</div>
+
+
+<p>El código anterior hace que el campo nombre(definido como <code>displayField</code>) sera trasformado con la forma <code>slug</code> y sera almacenado en el campo <code>slug_dst</code> para que de esta forma podamos realizar las consultas.</p>
+
+<h3>Accediendo a los valores desde slug</h3>
+
+<p>Finalmente en nuestro controlador podemos llamar a las funciones slug:</p>
+
+<div class="highlight">
+<pre><span class="cp">&lt;?php</span>
+    <span class="c1">#leyendo un registro a partir del slug</span>
+    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">Articulo</span><span class="o">-&gt;</span><span class="na">readBySlug</span><span class="p">(</span><span class="nv">$slug</span><span class="p">);</span>
+
+    <span class="c1">#obteniendo el id del articulo a partir del slug</span>
+    <span class="nv">$id</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">Articulo</span><span class="o">-&gt;</span><span class="na">primaryKeyBySlug</span><span class="p">((</span><span class="nv">$slug</span><span class="p">));</span>
+</pre>
+</div>
+
+
+<p>Para las demás funciones el comportamiento slug realiza las operaciones necesarias por ejemplo si deseamos guardar un registro basta con hacer:</p>
+
+<div class="highlight">
+<pre><span class="cp">&lt;?php</span>
+    <span class="c1">#agregando</span>
+    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">Articulo</span><span class="o">-&gt;</span><span class="na">save</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">data</span><span class="p">);</span>
+</pre>
+</div>
+
+
+<p>Donde en $this-&gt;data deberá contener el campo <code>displayField</code>(o el <code>slug_sr</code> que hallamos definido) y automáticamente el comportamiento nos va a generar el <code>slug_dst</code>, <em>¿fácil no?</em>.</p>
+
+<h2>Cambios futuros.</h2>
+
+<p>Este proyecto actualmente esta en la versión <code>1.0</code> los cambios en la siguiente versión( 1.1 ) se esperan que sean:</p>
+
+<ul>
+<li>Agregar <strong>callBack slug_prefix</strong>.</li>
+<li>Agregar <strong>callBack slug_postfix</strong>.</li>
+<li>Soporte para extensiones distintas a html, p.e.(<code>xhml</code>, <code>xml</code>).</li>
+</ul><p>Por el momento no he abordado el problema si tienes alguna idea bienvenida sea</p>
+
+<h2>Hackers.</h2>
+
+<p>Si quieres comprender mas te remiendo seguir la siguiente documentación:</p>
+
+<blockquote>
+<p><a href="http://book.cakephp.org/2.0/en/models/behaviors.html">http://book.cakephp.org/2.0/en/models/behaviors.html</a></p>
+</blockquote>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/mundoSICA">mundoSICA</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-32824744-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
