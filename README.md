@@ -3,14 +3,13 @@
 
 # Comportamiento para URLs Amigables.
 
-En ocasiones queremos que nuestros _registros_ sean accedidos por otro campo clave ademas del ID, por ejemplo en el sitio web tenemos **artículos** los cuales tiene los siguientes campos:
+En ocasiones queremos que nuestros _registros_ sean accedidos por un campo distinto al **ID**, por ejemplo en el sitio web tenemos **artículos** los cuales tiene los siguientes campos:
 
  - id - Identificador (campo auto incrementable)
  - nombre - Es campo es único también.
  - contenido - texto el cual podría ser vació.
 
-
-Ahora según el estándar del cakephp nos dice que para acceder al primer, articulo el cual se llama "algún articulo" tendríamos las siguientes **URLs**:
+Si queremos definir las acciones `ver`, `editar` y `borrar` para nuestros articulos, [el estándar del **cakephp**](http://book.cakephp.org/2.0/en/development/routing.html#default-routing) nos dice que para acceder al primer, articulo el cual se llama "algún articulo" tendríamos las siguientes **URLs**:
 
 
 	#visualizando un articulo
@@ -71,24 +70,32 @@ Como **Tip** te recomiendo configuraren tu  base de datos el campo `slug_dst` co
 
 Por defecto toma el campo que hayamos definido como [**displayField**](http://book.cakephp.org/view/1062/displayField),ademas este campo deberá ser un campo único en la tabla, el cual sufrirá la trasformación **slug** para ser almacenado como `slug_dst`.
 
-
+```php
+<?php
 	#Definiendo el campo $displayField
 	var $displayField = 'titulo';
 	#Agregamos el comportamiento `Slug` entre la lista de comportamientos
 	var $actsAs = array('Slug');
+```
 
 #### Definición explicita del campo a trasformar
 
+```php
+<?php
 	#Agregamos el comportamiento `Slug` entre la lista de
 	#comportamientos, esta vez con defincion explita del
 	#campo a traformar slug_src
 	var $actsAs = array('Slug'=>array('slug_src' => 'titulo'));
+```
 
 
 Cabe mencionar que si definimos el **displayField** y también definimos explícitamente el campo a trasformar `slug_src` la opción que tomara sera la explicita, veamos un ejemplo:
 
+```php
+<?php
 	var $displayField = 'nombre';
 	var $actsAs = array('Slug'=>array('slug_src' => 'titulo'));
+```
 
 El campo que tomara para trasformarlo sera `titulo` (por encima de `nombre`) ya que de esta forma estaremos diciendo explícitamente que el `slug_src` deberá ser el campo `titulo`.
 
@@ -97,8 +104,10 @@ El campo que tomara para trasformarlo sera `titulo` (por encima de `nombre`) ya 
 
 Deberás agregar el campo slug_dst como indice:
 
+```sql
 	ALTER TABLE `talleres` ADD `slug_dst` VARCHAR( 80 ) NOT NULL AFTER `id` ,
 	ADD INDEX ( `slug_dst` ) 
+```
 
 El resultado de la trasformación **slug**  la cual en este caso seria 'algun-articulo', se almacenara automáticamente en este campo y desde ahí nuestro sistema podrá responder desde una url similar a:
 
@@ -113,8 +122,10 @@ El resultado de la trasformación **slug**  la cual en este caso seria 'algun-ar
 
 Ahora sí por alguna razón necesitas(ó simplemente deseas) que almacenar el valor `slug_dst`  en algún campo distinto por ejemplo `seo_url`, lo que tienes que hacer es definir explícitamente el campo `slug_dst`.
 
- 
+```php 
+<?php
 	var $actsAs = array('Slug'=>array('slug_dst' => 'seo_url'));
+```
 
 En este caso el valor 'algun-articulo' quedaria almacenado en el campo `seo_url` de nuestra tabla `articulos`.
 
@@ -123,19 +134,28 @@ En este caso el valor 'algun-articulo' quedaria almacenado en el campo `seo_url`
 
 Longitud máxima que puede llegar a tomar `slug_dst`.
 
+```php
+<?php
 	var $actsAs = array('Slug'=>array('max_len'=>30));
 	#esto nos genera
 	Articulo.slug_dst = "este-es-un-articulo-sobre-el-c"
+```
 
 #### wd\_separator separador de palabras:
 
 Separador de palabras `wd_separator` (words separator) es el carácter separador de palabras,el valor por defecto es el guion alto(-), pero tu puedes definir otro por ejemplo:
 
+```php
+<?php
 	var $actsAs = array('Slug'=>array('wd_separator'=>'_'));
+```
 
 Esto nos generaría en `slug_dst` el valor de `algun_articulo`(en lugar de `algun-articulo`)
 
+```php
+<?php
 	var $actsAs = array('Slug'=>array('wd_separator'=>'.'));
+```
 
 Esto nos generaría en `slug_dst` el valor de `algun.articulo`.
 
@@ -144,8 +164,9 @@ Esto nos generaría en `slug_dst` el valor de `algun.articulo`.
 
 Por defecto false, si activamos este campo agrega la extensión '.html', reduciendo 5 caracteres el campo max\_len (la longitud de '.html').
 
+```php
 	var $actsAs = array('Slug'=>array('extension_active'=>true));
-
+```
 
 En este caso el valor `slug_dst` seria `algun-articulo.html` agregando al final la extensión `.html`.
 
@@ -154,16 +175,19 @@ En este caso el valor `slug_dst` seria `algun-articulo.html` agregando al final 
 
 Entonces definimos la siguiente tabla:
 
+```sql
 	CREATE TABLE IF NOT EXISTS `articulos` (
 		`id` INT( 5 ) PRIMARY KEY NOT NULL UNIQUE AUTO_INCREMENT,
 		`nombre` VARCHAR( 80 ) NOT NULL UNIQUE,
 		`slug_dst` VARCHAR( 50 ) NOT NULL UNIQUE,
 		`contenido` VARCHAR( 150 ) DEFAULT NULL
 	) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+```
+
 
 En nuestro modelo de **Articulo**(`APP/Model/Behavior/SlugBehavior.php`) definimos el comportamiento **slug** de la siguiente manera:
-
-	<?php
+```php
+<?php
 	class Articulo extends AppModel{
 		var $name = 'Articulo';
 		
@@ -173,6 +197,7 @@ En nuestro modelo de **Articulo**(`APP/Model/Behavior/SlugBehavior.php`) definim
 		#Definición del comportamiento slug
 		var $actsAs = array( 'slug'=>array('extension_active'=>true));
 	}
+```
 
 El código anterior hace que el campo nombre(definido como `displayField`) sera trasformado con la forma `slug` y sera almacenado en el campo `slug_dst` para que de esta forma podamos realizar las consultas.
 
@@ -180,18 +205,23 @@ El código anterior hace que el campo nombre(definido como `displayField`) sera 
 
 Finalmente en nuestro controlador podemos llamar a las funciones slug:
 
+```php
+<?php
 	#leyendo un registro a partir del slug
 	$this->Articulo->readBySlug($slug);
 
 	#obteniendo el id del articulo a partir del slug
 	$id = $this->Articulo->primaryKeyBySlug(($slug));
-	
+```
 	
 Para las demás funciones el comportamiento slug realiza las operaciones necesarias por ejemplo si deseamos guardar un registro basta con hacer:
 
+```php
+<?php
 	#agregando
 	$this->Articulo->save($this->data);
-	
+```
+
 Donde en $this->data deberá contener el campo `displayField`(o el `slug_sr` que hallamos definido) y automáticamente el comportamiento nos va a generar el `slug_dst`, _¿fácil no?_.
 
 
