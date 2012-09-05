@@ -117,8 +117,9 @@ class SlugBehavior extends ModelBehavior {
 	function beforeSave(&$Model) {
 		$alias=$Model->alias;
 		extract($this->settings[$Model->alias]);
-		if( $Model->data[$alias][$slug_src] && (!isset($Model->data[$alias][$slug_dst]) || !$Model->data[$alias][$slug_dst]))
+		if( isset($Model->data[$alias][$slug_src]) && !isset($Model->data[$alias][$slug_dst])) {
 			$Model->data[$alias][$slug_dst] = $this->slugStr($Model, $Model->data[$alias][$slug_src]);
+		}
 		#Regresamos el resultado del unique para el campo slug a guardar
 		return $Model->isUnique(array($slug_dst));
 	}
